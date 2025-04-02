@@ -1,9 +1,14 @@
-import Image from "next/image";
+import { getCurrentSession } from "@/actions/auth";
 
-export default function Home() {
+const Home = async () => {
+
+  const {user} = await getCurrentSession();
+
   return (
     <div>
-      Home
+      {JSON.stringify(user)}
     </div>
   );
 }
+
+export default Home;
