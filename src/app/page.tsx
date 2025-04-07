@@ -1,4 +1,6 @@
 import { getCurrentSession } from "@/actions/auth";
+import SalesCampaignBanner from "@/components/layout/SalesCampaignBanner";
+import ProductGrid from "@/components/product/ProductGrid";
 import { getAllProducts } from "@/sanity/lib/client";
 
 const Home = async () => {
@@ -9,7 +11,10 @@ const Home = async () => {
 
   return (
     <div>
-      {JSON.stringify(products)}
+      <SalesCampaignBanner />
+      <section className="container mx-auto py-8">
+        <ProductGrid products={products}/>
+      </section>
     </div>
   );
 }
