@@ -1,10 +1,11 @@
 import { Product } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 type ProductItemProps = {
-  product: Product[];
+  product: Product;
 };
 
 const ProductItem = ({ product }: ProductItemProps) => {
@@ -20,7 +21,7 @@ const ProductItem = ({ product }: ProductItemProps) => {
         {product.image && (
           <Image
             src={urlFor(product.image).width(256).url()}
-            alt={product.tittle || "Product Image"}
+            alt={product.title || "Product Image"}
             fill
             className="object-contain p-2"
             loading="lazy"
@@ -42,7 +43,12 @@ const ProductItem = ({ product }: ProductItemProps) => {
             </span>
           </div>
           <div className="text-xs text-green-500 font-semibold mb-2">{100 + Math.abs(product._id.split("").reduce((acc, char) => acc + char.charCodeAt(0),0)%500)}+ Sold!</div>
-          <button className="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white py-2 rounded-full text-sm font-bold hover:brightness-110 trasition-all">CHECK OUT</button>
+          <Link
+            href={`/product/${product._id}`}
+          className="w-full bg-gradient-to-r text-center from-red-500 to-orange-500 text-white py-2 rounded-full text-sm font-bold hover:brightness-110 trasition-all"
+          >
+            CHECK OUT
+            </Link>
           <div className="text-xs text-red-500 text-center mt-1 animate-pulse">Limited Time Offer!</div>
         </div>
       </div>
