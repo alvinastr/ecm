@@ -19,6 +19,9 @@ model User {
   passwordHash String
   sessions Session[]
   cart Cart?
+  reviews Review[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Session {
@@ -45,9 +48,28 @@ model CartLineItem {
 model Cart{
   id String @id
 
-
   userId Int? @unique
   user User? @relation(references: [id], fields: [userId], onDelete: Cascade)
 
   items CartLineItem[]
+}
+
+model Review {
+  id String @id @default(cuid())
+  sanityProductId String
+  rating Int // 1-5 stars
+  title String?
+  content String?
+  verified Boolean @default(false) // Whether user actually purchased the product
+  helpful Int @default(0) // Number of helpful votes
+  
+  userId Int
+  user User @relation(references: [id], fields: [userId], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([sanityProductId, userId]) // Prevent duplicate reviews from same user
+  @@index([sanityProductId])
+  @@index([rating])
 }

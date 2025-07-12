@@ -2,13 +2,13 @@ import { getOrCreateCart, syncCartWithUser, updateCartItem } from '@/actions/car
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type CartItem ={
+export type CartItem = {
     id: string;
     title: string;
     price: number;
     quantity: number;
     image: string;
-}
+};
 
 type CartStore = {
     items: CartItem[];
@@ -19,14 +19,14 @@ type CartStore = {
     addItem: (item: CartItem) => Promise<void>;
     removeItem: (id: string) => Promise<void>;
     updateQuantity: (id: string, quantity: number) => Promise<void>;
-    clearCart: () => Promise<void>;
+    clearCart: () => void;
     open: () => void;
     close: () => void;
     setLoaded: (loaded: boolean) => void;
     syncWithUser: () => Promise<void>;
     getTotalItems: () => number;
     getTotalPrice: () => number;
-}
+};
 
 export const useCartStore = create<CartStore>()(
     persist(
@@ -124,9 +124,8 @@ export const useCartStore = create<CartStore>()(
                 }
             },
 
-            clearCart: async () => {
+            clearCart: () => {
                 set((state) => ({ ...state, items: [] }));
-                return Promise.resolve();
             },
 
             open: () => {

@@ -1,23 +1,45 @@
 import SalesCampaignBanner from "@/components/layout/SalesCampaignBanner";
 import AddToCartButton from "@/components/product/AddToCartButton";
+import { ProductReviews } from "@/components/product/ProductReviewsSection";
 import { formatPrice } from "@/lib/utils";
 import { getProductById } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
-import { ChevronRight, Home } from "lucide-react";
+import { getCurrentSession } from "@/actions/auth";
+import { Breadcrumb, BackButton } from "@/components/ui";
 import Image from "next/image";
 import Link from "next/link";
-import { format } from "path";
 import React from "react";
 
 const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
   const product = await getProductById(id);
+  const { user } = await getCurrentSession();
 
-  if (!product.price) {
-    return <div className="text-center text-red-500">Product not found</div>;
+  if (!product || !product.price || !product.title) {
+    return (
+      <div className="container mx-auto py-16 text-center">
+        <div className="max-w-md mx-auto">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h1>
+          <p className="text-gray-600 mb-6">
+            The product you&apos;re looking for doesn&apos;t exist or has been removed.
+          </p>
+          <Link 
+            href="/"
+            className="bg-black text-white px-6 py-3 rounded-full font-medium hover:bg-gray-900 transition-colors"
+          >
+            Back to Shopping
+          </Link>
+        </div>
+      </div>
+    );
   }
 
-  const originalPrice = product.price * 5;
+  const originalPrice = product.price * 2; // Show 2x as "original" price for discount effect
+
+  const breadcrumbItems = [
+    { name: 'Products', href: '/search' },
+    { name: product.title, href: `/product/${id}`, isLast: true }
+  ];
 
   return (
     <div className="bg-gray-50">
@@ -26,16 +48,9 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
       {/* <-- BreadCrumb Navigation --> */}
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto py-3 px-4">
-          <div className="flex items-center gap-2 text-sm">
-            <Link
-              href="/"
-              className="text-gray-600 hover:text-red-600 transition colors flex items-center gap-1"
-            >
-              <Home className="w-4 h-4" />
-              <span className="text-sm font-bold">Home</span>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-              <span className="text-gray-400 truncate">{product.title}</span>
-            </Link>
+          <div className="flex items-center justify-between">
+            <Breadcrumb items={breadcrumbItems} />
+            <BackButton fallbackHref="/search" variant="link" />
           </div>
         </div>
       </div>
@@ -76,9 +91,11 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
                         {product.title}
                     </h1>
-                    <p className="text-gray-600">
-                        {product.description}
-                    </p>
+                    {product.description && (
+                        <p className="text-gray-600">
+                            {product.description}
+                        </p>
+                    )}
 
                     {/* <-- Price Section --> */}
                     <div className="flex items-center gap-2 mt-4">
@@ -115,7 +132,7 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
                             <span className="text-sm font-bold">{Math.floor(Math.random() * 50) + 20} SOLD! In the last hour!!</span>
                         </div>
                     </div>
-                    <div className="bg-gradient-to-r from yellow-500-/20 to-yellow-600/20 p-4 rounded-xl mt-4">
+                    <div className="bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 p-4 rounded-xl mt-4">
                         <div className="flex items-center gap-2 text-yellow-800">
                             <span className="text-xl">⚡️</span>
                             <span className="font-bold">Limited Time Offer!</span>
@@ -127,6 +144,17 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 
                     <AddToCartButton product={product}/>
                 </div>
+            </div>
+            
+            {/* Product Reviews Section */}
+            <div className="mt-12">
+                <ProductReviews 
+                    productId={id}
+                    user={user ? {
+                      id: user.id,
+                      email: user.email
+                    } : null}
+                />
             </div>
         </div>
     </div>

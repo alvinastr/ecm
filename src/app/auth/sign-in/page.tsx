@@ -1,4 +1,4 @@
-import { getCurrentSession, loginUser, registerUser } from '@/actions/auth'
+import { getCurrentSession, loginUser } from '@/actions/auth'
 import SignIn from '@/components/auth/SignIn';
 import { redirect } from 'next/navigation';
 import React from 'react'
@@ -17,7 +17,7 @@ const SignInpPage = async () => {
         return redirect('/');
     }
 
-    const action = async (prevstate: any, formdata: FormData) => {
+    const action = async (prevstate: { message?: string } | undefined, formdata: FormData) => {
         "use server"
         const parsed = SignInSchema.safeParse(Object.fromEntries(formdata));
         if(!parsed.success){
